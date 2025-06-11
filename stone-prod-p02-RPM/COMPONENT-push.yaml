@@ -1,0 +1,46 @@
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  annotations:
+    build.appstudio.openshift.io/repo: '{{ source_url }}/-/tree/{{ revision }}'
+    build.appstudio.redhat.com/commit_sha: '{{ revision }}'
+    build.appstudio.redhat.com/target_branch: '{{ target_branch }}'
+    pipelinesascode.tekton.dev/max-keep-runs: "3"
+    pipelinesascode.tekton.dev/on-cel-expression: event == "push"
+  creationTimestamp: null
+  labels:
+    appstudio.openshift.io/application: APPLICATION
+    appstudio.openshift.io/component: COMPONENT
+    pipelines.appstudio.openshift.io/type: build
+  name: COMPONENT-on-push
+  namespace: NAMESPACE
+spec:
+  params:
+    - name: package-name
+      value: libecpg
+    - name: git-url
+      value: "{{ source_url }}"
+    - name: revision
+      value: "{{ revision }}"
+    - name: target-branch
+      value: "{{ target_branch }}"
+    - name: ociStorage
+      value: "quay.io/redhat-user-workloads/$(context.taskRun.namespace)/COMPONENT:$(params.revision)"
+  pipelineRef:
+    resolver: bundles
+    params:
+      - name: bundle
+        value: quay.io/jhutar/tekton-bundle-private:rpmbuild-pipeline-0.1
+      - name: name
+        value: build-rhel-package
+      - name: kind
+        value: Pipeline
+      - name: secret
+        value: jhutar-tekton-bundle-private-puller-pull-secret
+  taskRunTemplate:
+    serviceAccountName: build-pipeline-COMPONENT
+  workspaces:
+    - name: git-auth
+      secret:
+        secretName: '{{ git_auth_secret }}'
