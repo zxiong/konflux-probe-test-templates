@@ -28,16 +28,14 @@ spec:
     - name: ociStorage
       value: "quay.io/redhat-user-workloads/$(context.taskRun.namespace)/COMPONENT:$(params.revision)"
   pipelineRef:
-    resolver: bundles
+    resolver: git
     params:
-      - name: bundle
-        value: quay.io/jhutar/tekton-bundle-private:rpmbuild-pipeline-0.1
-      - name: name
-        value: build-rhel-package
-      - name: kind
-        value: Pipeline
-      - name: secret
-        value: jhutar-tekton-bundle-private-puller-pull-secret
+      - name: url
+        value: https://gitlab.cee.redhat.com/rhel-on-konflux/rpmbuild-pipeline
+      - name: revision
+        value: main
+      - name: pathInRepo
+        value: pipeline/build-rhel-package.yaml
   taskRunTemplate:
     serviceAccountName: build-pipeline-COMPONENT
   workspaces:
