@@ -28,7 +28,7 @@ spec:
     - name: target-branch
       value: "{{ target_branch }}"
     - name: ociStorage
-      value: "quay.io/redhat-user-workloads/$(context.taskRun.namespace)/COMPONENT:$(params.revision)"
+      value: "quay.io/konflux-fedora/$(context.taskRun.namespace)/COMPONENT:on-pr-{{revision}}"
     - name: build-architectures
       value:
         - aarch64
