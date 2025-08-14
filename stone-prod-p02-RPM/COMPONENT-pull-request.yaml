@@ -28,6 +28,8 @@ spec:
       value: "{{ target_branch }}"
     - name: ociStorage
       value: "quay.io/redhat-user-workloads/$(context.taskRun.namespace)/COMPONENT:$(params.revision)"
+    - name: strictArch
+      value: "false"
   pipelineRef:
     resolver: git
     params:

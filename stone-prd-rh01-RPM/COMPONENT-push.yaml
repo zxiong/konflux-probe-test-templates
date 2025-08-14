@@ -33,6 +33,8 @@ spec:
       value:
         - aarch64
         - x86_64
+    - name: strictArch
+      value: "false"
   pipelineRef:
     resolver: git
     params:
