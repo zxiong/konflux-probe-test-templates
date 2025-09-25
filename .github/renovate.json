@@ -1,0 +1,19 @@
+{
+  "regexManagers": [
+    {
+      "fileMatch": ["\\.yaml$", "\\.yml$"],
+      "matchStrings": [
+        "value: (?<depName>quay\\.io/konflux-ci/tekton-catalog/[^:]+):(?<currentValue>[^@\\s]+)(@sha256:[a-f0-9]+)?"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["quay.io/konflux-ci/tekton-catalog/.*"],
+      "automerge": true,
+      "automergeType": "branch"
+    }
+  ]
+}
