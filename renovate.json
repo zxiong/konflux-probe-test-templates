@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "regexManagers": [
+    {
+      "fileMatch": ["\\.ya?ml$"],
+      "matchStrings": [
+        "value: (?<depName>quay\\.io/konflux-ci/tekton-catalog/[^:]+):(?<currentValue>[^@\\s]+)(@(?<currentDigest>sha256:[a-f0-9]+))?"
+      ],
+      "datasourceTemplate": "docker",
+      "extractVersionTemplate": "{{#if currentDigest}}{{currentValue}}@{{currentDigest}}{{else}}{{currentValue}}{{/if}}"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["^quay\\.io/konflux-ci/tekton-catalog/"],
+      "pinDigests": true,
+      "digest": {
+        "enabled": true
+      },
+      "automerge": true,
+      "automergeType": "pr"
+    }
+  ]
+}
