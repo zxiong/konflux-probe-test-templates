@@ -1,7 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "regexManagers": [
+  "extends": ["config:recommended", "mergeConfidence:all-badges"],
+  "schedule": ["before 6am every day"],
+  
+  "customManagers": [
     {
+      "customType": "regex",
       "fileMatch": ["\\.ya?ml$"],
       "matchStrings": [
         "value: (?<depName>quay\\.io/konflux-ci/tekton-catalog/[^:]+):(?<currentValue>[^@\\s]+)(@(?<currentDigest>sha256:[a-f0-9]+))?"
@@ -10,16 +14,27 @@
       "extractVersionTemplate": "{{#if currentDigest}}{{currentValue}}@{{currentDigest}}{{else}}{{currentValue}}{{/if}}"
     }
   ],
+  
   "packageRules": [
     {
       "matchDatasources": ["docker"],
       "matchPackagePatterns": ["^quay\\.io/konflux-ci/tekton-catalog/"],
-      "pinDigests": true,
-      "digest": {
-        "enabled": true
-      },
-      "automerge": true,
-      "automergeType": "pr"
+      "recreateWhen": "always",
+      "recreateClosed": true,
+      "prCreation": "immediate",
+      "automerge": false,
+      "groupName": "Tekton Task Bundle Upgrades",
+      "groupSlug": "tekton-tasks",
+      "prPriority": 10,
+      "branchTopic": "tekton-tasks-{{timestamp}}",
+      "commitMessageTopic": "tekton task bundle upgrades",
+      "prBodyNotes": [
+        "This PR aggregates all Tekton task bundle updates (tags and digests)."
+      ]
     }
-  ]
+  ],
+  
+  "branchConcurrentLimit": 3,
+  "prHourlyLimit": 0,
+  "rebaseWhen": "behind-base-branch"
 }
