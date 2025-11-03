@@ -27,6 +27,9 @@ spec:
     value: quay.io/redhat-user-workloads-stage/NAMESPACE/COMPONENT:on-pr-{{revision}}
   - name: image-expires-after
     value: 5d
+  - name: build-platforms
+    value:
+    - linux/x86_64
   - name: dockerfile
     value: /Dockerfile
   - name: build-source-image
@@ -37,10 +40,10 @@ spec:
     value: '{"type": "npm", "path": "."}'
   pipelineSpec:
     description: |
-      This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
+      This pipeline is ideal for building multi-arch container images from a Containerfile while maintaining trust after pipeline customization.
 
-      _Uses `buildah` to create a container image leveraging [trusted artifacts](https://konflux-ci.dev/architecture/ADR/0036-trusted-artifacts.html). It also optionally creates a source image and runs some build-time tests. Information is shared between tasks using OCI artifacts instead of PVCs. EC will pass the [`trusted_task.trusted`](https://conforma.dev/docs/policy/packages/release_trusted_task.html#trusted_task__trusted) policy as long as all data used to build the artifact is generated from trusted tasks.
-      This pipeline is pushed as a Tekton bundle to [quay.io](https://quay.io/repository/konflux-ci/tekton-catalog/pipeline-docker-build-oci-ta?tab=tags)_
+      _Uses `buildah` to create a multi-platform container image leveraging [trusted artifacts](https://konflux-ci.dev/architecture/ADR/0036-trusted-artifacts.html). It also optionally creates a source image and runs some build-time tests. This pipeline requires that the [multi platform controller](https://github.com/konflux-ci/multi-platform-controller) is deployed and configured on your Konflux instance. Information is shared between tasks using OCI artifacts instead of PVCs. EC will pass the [`trusted_task.trusted`](https://conforma.dev/docs/policy/packages/release_trusted_task.html#trusted_task__trusted) policy as long as all data used to build the artifact is generated from trusted tasks.
+      This pipeline is pushed as a Tekton bundle to [quay.io](https://quay.io/repository/konflux-ci/tekton-catalog/pipeline-docker-build-multi-platform-oci-ta?tab=tags)_
     params:
     - description: Source Repository URL
       name: git-url
@@ -109,6 +112,12 @@ spec:
         VMs
       name: privileged-nested
       type: string
+    - default:
+      - linux/x86_64
+      description: List of platforms to build the container images on. The available
+        set of values is determined by the configuration of the multi-platform-controller.
+      name: build-platforms
+      type: array
     results:
     - description: ""
       name: IMAGE_URL
@@ -195,7 +204,12 @@ spec:
         workspace: git-auth
       - name: netrc
         workspace: netrc
-    - name: build-container
+    - matrix:
+        params:
+        - name: PLATFORM
+          value:
+          - $(params.build-platforms)
+      name: build-images
       params:
       - name: IMAGE
         value: $(params.output-image)
@@ -227,15 +241,15 @@ spec:
       - name: CACHI2_ARTIFACT
         value: $(tasks.prefetch-dependencies.results.CACHI2_ARTIFACT)
       - name: IMAGE_APPEND_PLATFORM
-        value: "false"
+        value: "true"
       runAfter:
       - prefetch-dependencies
       taskRef:
         params:
         - name: name
-          value: buildah-oci-ta
+          value: buildah-remote-oci-ta
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-buildah-oci-ta:0.5@sha256:ba6d77ff428d7b353eb68d816be4d18ce7ed91b2c3cbf36889847a094b2739aa
+          value: quay.io/konflux-ci/tekton-catalog/task-buildah-remote-oci-ta:0.6@sha256:b2cfea52e3c007fef50ed8317dfe91ec3cf8379a90efd5858f9a1040dc5a4bbb
         - name: kind
           value: task
         resolver: bundles
@@ -256,11 +270,11 @@ spec:
         value: $(params.build-image-index)
       - name: IMAGES
         value:
-        - $(tasks.build-container.results.IMAGE_URL)@$(tasks.build-container.results.IMAGE_DIGEST)
+        - $(tasks.build-images.results.IMAGE_REF[*])
       - name: BUILDAH_FORMAT
         value: $(params.buildah-format)
       runAfter:
-      - build-container
+      - build-images
       taskRef:
         params:
         - name: name
@@ -327,7 +341,12 @@ spec:
         operator: in
         values:
         - "false"
-    - name: clair-scan
+    - matrix:
+        params:
+        - name: image-platform
+          value:
+          - $(params.build-platforms)
+      name: clair-scan
       params:
       - name: image-digest
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
@@ -349,7 +368,12 @@ spec:
         operator: in
         values:
         - "false"
-    - name: ecosystem-cert-preflight-checks
+    - matrix:
+        params:
+        - name: platform
+          value:
+          - $(params.build-platforms)
+      name: ecosystem-cert-preflight-checks
       params:
       - name: image-url
         value: $(tasks.build-image-index.results.IMAGE_URL)
@@ -395,7 +419,12 @@ spec:
         operator: in
         values:
         - "false"
-    - name: clamav-scan
+    - matrix:
+        params:
+        - name: image-arch
+          value:
+          - $(params.build-platforms)
+      name: clamav-scan
       params:
       - name: image-digest
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
@@ -474,7 +503,7 @@ spec:
         - name: name
           value: coverity-availability-check
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-coverity-availability-check:0.2@sha256:5623e48314ffd583e9cab383011dc0763b6c92b09c4f427b8bfcca885394a21c
+          value: quay.io/konflux-ci/tekton-catalog/task-coverity-availability-check:0.2@sha256:36bcf1531b85c2c7d7b4382bc0a9c61b0501e2e54e84991b11b225bdec0e5928
         - name: kind
           value: task
         resolver: bundles
@@ -588,7 +617,7 @@ spec:
         - name: name
           value: rpms-signature-scan
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-rpms-signature-scan:0.2@sha256:1b6c20ab3dbfb0972803d3ebcb2fa72642e59400c77bd66dfd82028bdd09e120
+          value: quay.io/konflux-ci/konflux-vanguard/task-rpms-signature-scan:0.2@sha256:3d016c63bcab64ab82da762a52b013c0bcb534e9523b8c0e073cc3a0c02f0cac
         - name: kind
           value: task
         resolver: bundles

@@ -24,6 +24,8 @@ spec:
     value: '{{revision}}'
   - name: output-image
     value: quay.io/redhat-user-workloads-stage/NAMESPACE/COMPONENT:{{revision}}
+  - name: image-expires-after
+    value: 5d
   - name: dockerfile
     value: /Dockerfile
   - name: build-source-image
@@ -38,20 +40,6 @@ spec:
 
       _Uses `buildah` to create a container image leveraging [trusted artifacts](https://konflux-ci.dev/architecture/ADR/0036-trusted-artifacts.html). It also optionally creates a source image and runs some build-time tests. Information is shared between tasks using OCI artifacts instead of PVCs. EC will pass the [`trusted_task.trusted`](https://conforma.dev/docs/policy/packages/release_trusted_task.html#trusted_task__trusted) policy as long as all data used to build the artifact is generated from trusted tasks.
       This pipeline is pushed as a Tekton bundle to [quay.io](https://quay.io/repository/konflux-ci/tekton-catalog/pipeline-docker-build-oci-ta?tab=tags)_
-    finally:
-    - name: show-sbom
-      params:
-      - name: IMAGE_URL
-        value: $(tasks.build-image-index.results.IMAGE_URL)
-      taskRef:
-        params:
-        - name: name
-          value: show-sbom
-        - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-show-sbom:0.1@sha256:beb0616db051952b4b861dd8c3e00fa1c0eccbd926feddf71194d3bb3ace9ce7
-        - name: kind
-          value: task
-        resolver: bundles
     params:
     - description: Source Repository URL
       name: git-url
@@ -86,7 +74,7 @@ spec:
       name: hermetic
       type: string
     - default: ""
-      description: Build dependencies to be prefetched by Cachi2
+      description: Build dependencies to be prefetched
       name: prefetch-input
       type: string
     - default: ""
@@ -98,9 +86,14 @@ spec:
       description: Build a source image.
       name: build-source-image
       type: string
-    - default: "false"
+    - default: "true"
       description: Add built image into an OCI image index
       name: build-image-index
+      type: string
+    - default: docker
+      description: The format for the resulting image's mediaType. Valid values are
+        oci or docker.
+      name: buildah-format
       type: string
     - default: []
       description: Array of --build-arg values ("arg=value" strings) for buildah
@@ -224,10 +217,16 @@ spec:
         value: $(params.build-args-file)
       - name: PRIVILEGED_NESTED
         value: $(params.privileged-nested)
+      - name: SOURCE_URL
+        value: $(tasks.clone-repository.results.url)
+      - name: BUILDAH_FORMAT
+        value: $(params.buildah-format)
       - name: SOURCE_ARTIFACT
         value: $(tasks.prefetch-dependencies.results.SOURCE_ARTIFACT)
       - name: CACHI2_ARTIFACT
         value: $(tasks.prefetch-dependencies.results.CACHI2_ARTIFACT)
+      - name: IMAGE_APPEND_PLATFORM
+        value: "false"
       runAfter:
       - prefetch-dependencies
       taskRef:
@@ -257,6 +256,8 @@ spec:
       - name: IMAGES
         value:
         - $(tasks.build-container.results.IMAGE_URL)@$(tasks.build-container.results.IMAGE_DIGEST)
+      - name: BUILDAH_FORMAT
+        value: $(params.buildah-format)
       runAfter:
       - build-container
       taskRef:
