@@ -39,8 +39,7 @@ jobs:
           RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '[\"^pipeline-migration-tool migrate -f \\\"\\$RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE\\\"$\"]'
 
           # Logging
-          LOG_LEVEL: info
+          LOG_LEVEL: debug
 
           # Optional: Enable for debugging
-          # LOG_LEVEL: debug
           # RENOVATE_DRY_RUN: full

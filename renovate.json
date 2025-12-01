@@ -23,7 +23,7 @@
           "/^quay.io/redhat-appstudio-tekton-catalog//"
         ],
         "enabled": true,
-        "groupName": "Konflux task references",
+        "groupName": "Konflux task references (test migration)",
         "branchPrefix": "konflux/tasks-test/",
         "commitMessageTopic": "Konflux task references",
         "prCreation": "immediate",
