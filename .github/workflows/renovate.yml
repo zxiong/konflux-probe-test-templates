@@ -1,0 +1,46 @@
+# Self-hosted Renovate using MintMaker's official image
+# This uses the exact same setup as MintMaker - no custom scripts needed!
+
+name: Renovate
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run daily at midnight
+  workflow_dispatch:
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v40.3.2
+        with:
+          configurationFile: renovate.json
+          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          # Use MintMaker's official Renovate image
+          # This image already has pipeline-migration-tool installed!
+          RENOVATE_BINARY_SOURCE: docker
+          RENOVATE_DOCKER_IMAGE: quay.io/konflux-ci/mintmaker-renovate-image:latest
+
+          # Repository configuration
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
+          RENOVATE_PLATFORM: github
+          RENOVATE_ENDPOINT: https://api.github.com
+
+          # Git configuration
+          RENOVATE_USERNAME: renovate-bot
+          RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
+
+          # CRITICAL: Allow the pipeline-migration-tool command
+          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '[\"^pipeline-migration-tool migrate -f \\\"\\$RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE\\\"$\"]'
+
+          # Logging
+          LOG_LEVEL: info
+
+          # Optional: Enable for debugging
+          # LOG_LEVEL: debug
+          # RENOVATE_DRY_RUN: full
