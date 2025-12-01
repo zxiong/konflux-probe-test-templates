@@ -5,7 +5,6 @@
     "config:recommended",
     ":gitSignOff"
   ],
-  "schedule": ["before 6am every day"],
   "platformCommit": "enabled",
   "branchPrefix": "konflux/renovate/",
   "prConcurrentLimit": 5,
