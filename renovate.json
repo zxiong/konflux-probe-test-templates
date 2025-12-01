@@ -11,6 +11,7 @@
   "platformCommit": "enabled",
   "branchPrefix": "konflux/renovate/",
   "prConcurrentLimit": 5,
+  "includePaths": ["nodejs-devfile-sample-test/COMPONENT-pull-request.yaml"],
   "tekton": {
     "enabled": true,
     "fileMatch": [
