@@ -24,8 +24,9 @@
         ],
         "enabled": true,
         "groupName": "Konflux task references",
-        "branchPrefix": "konflux/tasks/",
+        "branchPrefix": "konflux/tasks-test/",
         "commitMessageTopic": "Konflux task references",
+        "prCreation": "immediate",
         "prBodyColumns": [
           "Package",
           "Change",
