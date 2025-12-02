@@ -22,19 +22,21 @@ jobs:
           configurationFile: renovate.json
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
-          # Run the command inside the MintMaker container
+          # Run inside the container
           RENOVATE_BINARY_SOURCE: docker
           RENOVATE_DOCKER_IMAGE: quay.io/konflux-ci/mintmaker-renovate-image:latest
           
-          # Standard Renovate setup
+          # Standard Setup
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           RENOVATE_PLATFORM: github
           RENOVATE_ENDPOINT: https://api.github.com
           RENOVATE_USERNAME: renovate-bot
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
-          
-          # Security: Allow the tool to run (matches binary name regardless of path)
-          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^.*pipeline-migration-tool.*"]'
-          
-          # Logging
+
+          # CRITICAL FIX: Removed RENOVATE_ENV_VARS. 
+          # Allowing the image to use its default PATH ensures it finds the tool.
+
+          # Allow the tool by name (trusting the container's PATH)
+          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^pipeline-migration-tool.*"]'
+
           LOG_LEVEL: debug
