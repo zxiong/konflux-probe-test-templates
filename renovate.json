@@ -9,6 +9,9 @@
   "branchPrefix": "konflux/renovate/",
   "prConcurrentLimit": 5,
   "includePaths": ["nodejs-devfile-sample-test/COMPONENT-pull-request.yaml"],
+  "allowedCommands": [
+    "/home/renovate/.local/bin/pipeline-migration-tool migrate -f .*"
+  ],
   "tekton": {
     "enabled": true,
     "fileMatch": [
