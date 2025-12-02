@@ -11,12 +11,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Install pipeline-migration-tool on runner
         run: |
           pip3 install pipx
           pipx install git+https://github.com/konflux-ci/pipeline-migration-tool.git@v0.5.1
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+          
+          # Debug: Verify installation
+          echo "=== Verification ==="
+          which pipeline-migration-tool
+          pipeline-migration-tool --help
 
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@v40.3.2
@@ -31,8 +36,8 @@ jobs:
           RENOVATE_ENDPOINT: https://api.github.com
           RENOVATE_USERNAME: renovate-bot
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
-          
-          # Now use the local path on the runner
-          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["/home/renovate/.local/bin/pipeline-migration-tool migrate -f .*"]'
-          
+
+          # Use relative path since it's in PATH
+          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["pipeline-migration-tool.*"]'
+
           LOG_LEVEL: debug
