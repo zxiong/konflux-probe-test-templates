@@ -4,8 +4,8 @@
 name: Renovate
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # Run daily at midnight
+  # schedule:
+  #   - cron: '0 0 * * *'  # Run daily at midnight - DISABLED FOR TESTING
   workflow_dispatch:
 
 jobs:
