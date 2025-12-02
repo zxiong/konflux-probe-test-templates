@@ -36,7 +36,8 @@ jobs:
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
 
           # CRITICAL: Allow the pipeline-migration-tool command
-          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '[\"^pipeline-migration-tool migrate -f \\\"\\$RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE\\\"$\"]'
+          # This must be a JSON array with properly escaped regex pattern
+          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^pipeline-migration-tool migrate -f \"\\$RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE\"$"]'
 
           # Logging
           LOG_LEVEL: debug
