@@ -8,17 +8,13 @@
   "platformCommit": "enabled",
   "branchPrefix": "konflux/renovate/",
   "prConcurrentLimit": 5,
-  "includePaths": ["nodejs-devfile-sample-test/COMPONENT-pull-request.yaml"],
-  "allowedCommands": [
-    "^/usr/local/bin/pipeline-migration-tool migrate -f .*"
+  "includePaths": [
+    "nodejs-devfile-sample-test/COMPONENT-pull-request.yaml"
   ],
   "tekton": {
     "enabled": true,
     "fileMatch": [
       "\\.ya?ml$"
-    ],
-    "allowedCommands": [
-      "^/usr/local/bin/pipeline-migration-tool migrate -f .*"
     ],
     "packageRules": [
       {
@@ -42,15 +38,18 @@
         },
         "recreateWhen": "always",
         "recreateClosed": true,
-        "rebaseWhen": "behind-base-branch"
+        "rebaseWhen": "behind-base-branch",
+        "force": {
+          "constraints": null
+        }
       }
     ],
     "postUpgradeTasks": {
       "commands": [
-        "/usr/local/bin/pipeline-migration-tool migrate -f \"$RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE\""
+        "pipeline-migration-tool migrate -f \"$RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE\""
       ],
       "executionMode": "branch",
-      "dataFileTemplate": "[{{#each upgrades}}{\"depName\": \"{{{depName}}}\", \"currentValue\": \"{{{currentValue}}}\", \"currentDigest\": \"{{{currentDigest}}}\", \"newValue\": \"{{{newValue}}}\", \"newDigest\": \"{{{newDigest}}}\", \"packageFile\": \"{{{packageFile}}}\", \"parentDir\": \"{{{parentDir}}}\", \"depTypes\": [{{#each depTypes}}\"{{{this}}}\"{{#unless @last}},{{\/unless}}{{\/each}}]}{{#unless @last}},{{\/unless}}{{\/each}}]",
+      "dataFileTemplate": "[{{#each upgrades}}{\"depName\": \"{{{depName}}}\", \"currentValue\": \"{{{currentValue}}}\", \"currentDigest\": \"{{{currentDigest}}}\", \"newValue\": \"{{{newValue}}}\", \"newDigest\": \"{{{newDigest}}}\", \"packageFile\": \"{{{packageFile}}}\", \"parentDir\": \"{{{parentDir}}}\", \"depTypes\": [{{#each depTypes}}\"{{{this}}}\"{{#unless @last}},{{/unless}}{{/each}}]}{{#unless @last}},{{/unless}}{{/each}}]",
       "fileFilters": [
         "**/*.yaml",
         "**/*.yml"

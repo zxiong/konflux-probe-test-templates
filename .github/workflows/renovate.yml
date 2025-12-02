@@ -12,24 +12,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install pipeline-migration-tool on runner
-        run: |
-          pip3 install pipx
-          pipx install git+https://github.com/konflux-ci/pipeline-migration-tool.git@v0.5.1
-          which pipeline-migration-tool
-          cp /opt/pipx_bin/pipeline-migration-tool /usr/local/bin/
-          chmod +x /usr/local/bin/pipeline-migration-tool
+      # REMOVED: "Install pipeline-migration-tool on runner" step.
+      # Reason: You are running Renovate in Docker mode. 
+      # The tool must exist inside the docker image (quay.io/...), not on this runner.
 
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@v40.3.2
         with:
           configurationFile: renovate.json
           token: ${{ secrets.GITHUB_TOKEN }}
-          renovate-args: >
-            --allowed-commands="^/usr/local/bin/pipeline-migration-tool migrate -f .*"
         env:
+          # Run the command inside the MintMaker container
           RENOVATE_BINARY_SOURCE: docker
           RENOVATE_DOCKER_IMAGE: quay.io/konflux-ci/mintmaker-renovate-image:latest
+          
+          # Standard Renovate setup
           RENOVATE_REPOSITORIES: ${{ github.repository }}
-          RENOVATE_ENV_VARS: '{"PATH":"/usr/local/bin:/usr/bin:/bin:/home/runner/.local/bin"}'
+          RENOVATE_PLATFORM: github
+          RENOVATE_ENDPOINT: https://api.github.com
+          RENOVATE_USERNAME: renovate-bot
+          RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
+          
+          # Security: Allow the tool to run (matches binary name regardless of path)
+          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^pipeline-migration-tool.*"]'
+          
+          # Logging
           LOG_LEVEL: debug
