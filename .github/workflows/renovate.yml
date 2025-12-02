@@ -21,6 +21,7 @@ jobs:
         with:
           configurationFile: renovate.json
           token: ${{ secrets.GITHUB_TOKEN }}
+          mount-docker-socket: "true"
         env:
           # Run inside the container
           RENOVATE_BINARY_SOURCE: docker
