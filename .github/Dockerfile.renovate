@@ -21,13 +21,28 @@ RUN curl -L https://github.com/mikefarah/yq/releases/latest/download/yq_linux_am
     chmod +x /usr/bin/yq
 
 # Install pipeline-migration-tool using pip
-RUN pip3 install --break-system-packages git+https://github.com/konflux-ci/pipeline-migration-tool.git
+RUN pip3 install --break-system-packages git+https://github.com/konflux-ci/pipeline-migration-tool.git && \
+    echo "=== Checking where pipeline-migration-tool was installed ===" && \
+    find /usr -name "pipeline-migration-tool" 2>/dev/null || true && \
+    ls -la /usr/local/bin/ | grep -i pipeline || echo "Not in /usr/local/bin" && \
+    python3 -m pip show pipeline-migration-tool
 
-# Verify installations
-RUN yq --version && \
-    pipeline-migration-tool --help
+# Create symlink if needed
+RUN if [ ! -f /usr/local/bin/pipeline-migration-tool ]; then \
+    TOOL_PATH=$(find /usr -name "pipeline-migration-tool" -type f 2>/dev/null | head -1); \
+    if [ -n "$TOOL_PATH" ]; then \
+        ln -s "$TOOL_PATH" /usr/local/bin/pipeline-migration-tool; \
+    fi; \
+    fi
+
+# Verify installations work
+RUN which yq && yq --version
+RUN python3 -m pipeline_migration_tool --help
 
 USER ubuntu
+
+# Ensure PATH is set for ubuntu user as well
+ENV PATH="/usr/local/bin:${PATH}"
 
 LABEL org.opencontainers.image.source="https://github.com/zxiong/konflux-probe-test-templates"
 LABEL org.opencontainers.image.description="Renovate with pipeline-migration-tool for automatic Tekton task migrations"

@@ -39,8 +39,9 @@ jobs:
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
 
           # CRITICAL: Allow execution of pipeline-migration-tool (pre-installed in custom image)
+          # Run as Python module to avoid PATH issues
           RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '[
-            "^pipeline-migration-tool migrate -f .*$"
+            "^python3 -m pipeline_migration_tool migrate -f .*$"
           ]'
 
           # Logging
