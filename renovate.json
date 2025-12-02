@@ -44,6 +44,8 @@
     ],
     "postUpgradeTasks": {
       "commands": [
+        "echo PATH=$PATH",
+        "ls -al /home/renovate/.local/bin",
         "pipeline-migration-tool migrate -f \"$RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE\""
       ],
       "executionMode": "branch",
