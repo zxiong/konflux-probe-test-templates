@@ -19,6 +19,11 @@
     "fileMatch": [
       "\\.ya?ml$"
     ],
+    "allowedCommands": [
+      "^echo PATH=\\$PATH$",
+      "^ls -al /home/renovate/.local/bin$",
+      "^/home/renovate/.local/bin/pipeline-migration-tool migrate -f .*"
+    ],
     "packageRules": [
       {
         "description": "Group all Konflux task updates together",
