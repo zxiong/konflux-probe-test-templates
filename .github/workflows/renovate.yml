@@ -24,10 +24,12 @@ jobs:
           
           # CRITICAL FIX: Use the MintMaker image as the MAIN container
           # This ensures pipeline-migration-tool is available locally.
-          renovate-image: quay.io/konflux-ci/mintmaker-renovate-image:latest
+          renovate-image: quay.io/konflux-ci/mintmaker-renovate-image
           
           # Keep this if you need Docker for other things, but it might not be strictly necessary now
           mount-docker-socket: "true"
+          docker-socket-host-path: /var/run/docker.sock
+          docker-volumes: /tmp:/tmp
           
         env:
           # You can likely remove RENOVATE_BINARY_SOURCE now, 
