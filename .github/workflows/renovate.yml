@@ -30,9 +30,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           # ADD CLI ARGUMENTS - these will override config file
           renovate-args: >
-            --allowed-commands="^echo PATH=\\$PATH$"
-            --allowed-commands="^ls -al /home/renovate/.local/bin$"
-            --allowed-commands="^/home/renovate/.local/bin/pipeline-migration-tool migrate -f .*"
+            --allowed-commands="^pipeline-migration-tool migrate -f .*"
             --autodiscover=true
             --autodiscover-filter=${{ github.repository }}
         env:
