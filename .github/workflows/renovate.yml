@@ -34,7 +34,7 @@ jobs:
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
           
           # Security: Allow the tool to run (matches binary name regardless of path)
-          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^pipeline-migration-tool.*"]'
+          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^.*pipeline-migration-tool.*"]'
           
           # Logging
           LOG_LEVEL: debug
