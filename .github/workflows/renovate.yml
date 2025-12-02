@@ -31,12 +31,10 @@ jobs:
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
 
           # CRITICAL: Allow installation and execution of pipeline-migration-tool (Python)
-          # These commands install the tool using pipx during postUpgradeTasks
+          # Install as user (no root needed) and run from ~/.local/bin
           RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '[
-            "^apt-get update.*$",
-            "^apt-get install.*$",
-            "^pipx install.*$",
-            "^pipx run pipeline-migration-tool.*$"
+            "^pip install --user.*$",
+            "^\\$HOME/\\.local/bin/pipeline-migration-tool.*$"
           ]'
 
           # Logging
