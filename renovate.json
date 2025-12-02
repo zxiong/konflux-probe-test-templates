@@ -45,7 +45,12 @@
     ],
     "postUpgradeTasks": {
       "commands": [
-        "pipeline-migration-tool migrate -f \"$RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE\""
+        "apt-get update && apt-get install -y git curl golang-go",
+        "curl -L https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /tmp/yq && chmod +x /tmp/yq",
+        "git clone --depth 1 https://github.com/konflux-ci/pipeline-migration-tool.git /tmp/pipeline-migration-tool",
+        "cd /tmp/pipeline-migration-tool && go build -o /tmp/pipeline-migration-tool-bin ./cmd/pipeline-migration-tool",
+        "git clone --depth 1 https://github.com/konflux-ci/build-definitions.git /tmp/build-definitions",
+        "PATH=/tmp:$PATH BUILD_DEFINITIONS_PATH=/tmp/build-definitions /tmp/pipeline-migration-tool-bin migrate -f \"$RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE\""
       ],
       "executionMode": "branch",
       "dataFileTemplate": "[{{#each upgrades}}{\"depName\": \"{{{depName}}}\", \"currentValue\": \"{{{currentValue}}}\", \"currentDigest\": \"{{{currentDigest}}}\", \"newValue\": \"{{{newValue}}}\", \"newDigest\": \"{{{newDigest}}}\", \"packageFile\": \"{{{packageFile}}}\", \"parentDir\": \"{{{parentDir}}}\", \"depTypes\": [{{#each depTypes}}\"{{{this}}}\"{{#unless @last}},{{/unless}}{{/each}}]}{{#unless @last}},{{/unless}}{{/each}}]",
