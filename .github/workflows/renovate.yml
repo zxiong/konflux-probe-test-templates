@@ -21,23 +21,25 @@ jobs:
         with:
           configurationFile: renovate.json
           token: ${{ secrets.GITHUB_TOKEN }}
-          mount-docker-socket: "true"
-        env:
-          # Run inside the container
-          RENOVATE_BINARY_SOURCE: docker
-          RENOVATE_DOCKER_IMAGE: quay.io/konflux-ci/mintmaker-renovate-image:latest
           
-          # Standard Setup
+          # CRITICAL FIX: Use the MintMaker image as the MAIN container
+          # This ensures pipeline-migration-tool is available locally.
+          renovate-image: quay.io/konflux-ci/mintmaker-renovate-image:latest
+          
+          # Keep this if you need Docker for other things, but it might not be strictly necessary now
+          mount-docker-socket: "true"
+          
+        env:
+          # You can likely remove RENOVATE_BINARY_SOURCE now, 
+          # unless you specifically need sidecars for other languages.
+          # RENOVATE_BINARY_SOURCE: docker
+          
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           RENOVATE_PLATFORM: github
           RENOVATE_ENDPOINT: https://api.github.com
           RENOVATE_USERNAME: renovate-bot
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
-
-          # CRITICAL FIX: Removed RENOVATE_ENV_VARS. 
-          # Allowing the image to use its default PATH ensures it finds the tool.
-
-          # Allow the tool by name (trusting the container's PATH)
+          
+          # Keep the regex allowing the tool
           RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^.*pipeline-migration-tool.*"]'
-
           LOG_LEVEL: debug
