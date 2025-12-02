@@ -38,6 +38,6 @@ jobs:
           # Allowing the image to use its default PATH ensures it finds the tool.
 
           # Allow the tool by name (trusting the container's PATH)
-          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^pipeline-migration-tool.*"]'
+          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^.*pipeline-migration-tool.*"]'
 
           LOG_LEVEL: debug
