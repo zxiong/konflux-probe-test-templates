@@ -34,7 +34,6 @@
         "prBodyDefinitions": {
           "Notes": "{{#if (or (containsString updateType 'minor') (containsString updateType 'major'))}}:warning: [Migration guide](https://github.com/konflux-ci/build-definitions/blob/main/task/{{{replace '^quay.io/(redhat-appstudio-tekton-catalog|konflux-ci/tekton-catalog)/task-' '' packageName}}}/{{{newVersion}}}/MIGRATION.md) :warning:{{/if}}"
         },
-        "recreateWhen": "always",
         "recreateClosed": false,
         "rebaseWhen": "behind-base-branch",
         "force": {
