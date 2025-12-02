@@ -35,8 +35,9 @@ jobs:
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
 
           # CRITICAL: Allow execution of pipeline-migration-tool (pre-installed in MintMaker image)
+          # Tool is installed via pipx to /home/renovate/.local/bin
           RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '[
-            "^pipeline-migration-tool migrate -f .*$"
+            "^/home/renovate/\\.local/bin/pipeline-migration-tool migrate -f .*$"
           ]'
 
           # Logging
