@@ -17,6 +17,7 @@ jobs:
           pip3 install pipx
           pipx install git+https://github.com/konflux-ci/pipeline-migration-tool.git@v0.5.1
           which pipeline-migration-tool
+          cp /opt/pipx_bin/pipeline-migration-tool /usr/local/bin/
           chmod +x /usr/local/bin/pipeline-migration-tool
 
       - name: Self-hosted Renovate
