@@ -35,9 +35,10 @@ jobs:
           RENOVATE_USERNAME: renovate-bot
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
 
-          # CRITICAL: Allow the pipeline-migration-tool command
-          # Simplified regex pattern to avoid escaping issues
-          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^pipeline-migration-tool migrate -f .*$"]'
+          # CRITICAL FIX: Simplified regex to allow the tool globally.
+          # This bypasses the escaping issues with quotes/flags that caused the
+          # "has not been added to allowed list" error.
+          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^pipeline-migration-tool.*"]'
 
           # Logging
           LOG_LEVEL: debug
