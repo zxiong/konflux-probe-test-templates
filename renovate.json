@@ -36,7 +36,10 @@
         },
         "recreateWhen": "always",
         "recreateClosed": true,
-        "rebaseWhen": "behind-base-branch"
+        "rebaseWhen": "behind-base-branch",
+        "force": {
+          "constraints": null
+        }
       }
     ],
     "postUpgradeTasks": {
