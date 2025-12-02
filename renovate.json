@@ -10,9 +10,9 @@
   "prConcurrentLimit": 5,
   "includePaths": ["nodejs-devfile-sample-test/COMPONENT-pull-request.yaml"],
   "allowedCommands": [
-    "echo PATH=$PATH",
-    "ls -al /home/renovate/.local/bin",
-    "/home/renovate/.local/bin/pipeline-migration-tool migrate -f .*"
+    "^echo PATH=\\$PATH$",
+    "^ls -al /home/renovate/.local/bin$",
+    "^/home/renovate/.local/bin/pipeline-migration-tool migrate -f .*"
   ],
   "tekton": {
     "enabled": true,
