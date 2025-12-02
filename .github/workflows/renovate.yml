@@ -30,18 +30,13 @@ jobs:
           RENOVATE_USERNAME: renovate-bot
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
 
-          # CRITICAL: Allow installation and execution of pipeline-migration-tool
-          # These commands install the tool and its dependencies during postUpgradeTasks
+          # CRITICAL: Allow installation and execution of pipeline-migration-tool (Python)
+          # These commands install the tool using pipx during postUpgradeTasks
           RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '[
             "^apt-get update.*$",
             "^apt-get install.*$",
-            "^curl -L https://github.com/mikefarah/yq.*$",
-            "^chmod \\+x.*$",
-            "^git clone --depth 1 https://github.com/konflux-ci/pipeline-migration-tool.*$",
-            "^git clone --depth 1 https://github.com/konflux-ci/build-definitions.*$",
-            "^cd /tmp/.*$",
-            "^go build.*$",
-            "^PATH=.*pipeline-migration-tool.*$"
+            "^pipx install.*$",
+            "^pipx run pipeline-migration-tool.*$"
           ]'
 
           # Logging
