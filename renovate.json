@@ -45,6 +45,7 @@
     ],
     "postUpgradeTasks": {
       "commands": [
+        "which pipeline-migration-tool || find /home/renovate -name 'pipeline-migration-tool' 2>/dev/null || echo 'Tool not found, checking if pipx works:' && pipx list",
         "/home/renovate/.local/bin/pipeline-migration-tool migrate -f \"$RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE\""
       ],
       "executionMode": "branch",

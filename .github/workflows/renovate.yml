@@ -36,7 +36,12 @@ jobs:
 
           # CRITICAL: Allow execution of pipeline-migration-tool (pre-installed in MintMaker image)
           # Tool is installed via pipx to /home/renovate/.local/bin
+          # Added debug commands to locate the tool
           RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '[
+            "^which pipeline-migration-tool.*$",
+            "^find /home/renovate -name.*$",
+            "^echo.*$",
+            "^pipx list$",
             "^/home/renovate/\\.local/bin/pipeline-migration-tool migrate -f .*$"
           ]'
 
