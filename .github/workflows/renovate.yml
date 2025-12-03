@@ -12,36 +12,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # REMOVED: "Install pipeline-migration-tool on runner" step.
-      # Reason: You are running Renovate in Docker mode. 
-      # The tool must exist inside the docker image (quay.io/...), not on this runner.
-
-      - name: Self-hosted Renovate
-        uses: renovatebot/github-action@v40.3.2
+      # 1. Setup Node.js (Required for Renovate)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          configurationFile: renovate.json
-          token: ${{ secrets.GITHUB_TOKEN }}
-          
-          # CRITICAL FIX: Use the MintMaker image as the MAIN container
-          # This ensures pipeline-migration-tool is available locally.
-          renovate-image: quay.io/konflux-ci/mintmaker-renovate-image
-          
-          # Keep this if you need Docker for other things, but it might not be strictly necessary now
-          mount-docker-socket: "true"
-          docker-socket-host-path: /var/run/docker.sock
-          docker-volumes: /tmp:/tmp
-          
+          node-version: '20'
+
+      # 2. Setup Python & Install the Migration Tool
+      # Since we are running on the VM, we just install it normally.
+      - name: Install pipeline-migration-tool
+        run: |
+          pipx install git+https://github.com/konflux-ci/pipeline-migration-tool.git
+          # Ensure path is available (pipx usually adds it, but just in case)
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      # 3. Run Official Renovate (NPM)
+      # This runs the official JS logic directly on the runner.
+      - name: Renovate
+        run: npx renovate
         env:
-          # You can likely remove RENOVATE_BINARY_SOURCE now, 
-          # unless you specifically need sidecars for other languages.
-          # RENOVATE_BINARY_SOURCE: docker
+          # Configuration
+          RENOVATE_CONFIG_FILE: renovate.json
+          RENOVATE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
+          # Repository scope
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           RENOVATE_PLATFORM: github
           RENOVATE_ENDPOINT: https://api.github.com
+          
+          # Git Identity
           RENOVATE_USERNAME: renovate-bot
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
           
-          # Keep the regex allowing the tool
-          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^.*pipeline-migration-tool.*"]'
+          # Security: Allow the tool (Regex matches the command name)
+          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^pipeline-migration-tool.*"]'
+          
+          # Logging
           LOG_LEVEL: debug
