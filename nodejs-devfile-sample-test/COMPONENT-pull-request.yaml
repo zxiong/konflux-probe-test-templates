@@ -122,6 +122,10 @@ spec:
         VMs
       name: privileged-nested
       type: string
+    - default: []
+      description: Array of platforms to build the container image for
+      name: build-platforms
+      type: array
     results:
     - description: ""
       name: IMAGE_URL
