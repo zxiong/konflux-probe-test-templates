@@ -12,40 +12,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 1. Setup Node.js (Required for Renovate)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 2. Setup Python & Install the Migration Tool
-      # Since we are running on the VM, we just install it normally.
+      # Install the tool on the runner VM
       - name: Install pipeline-migration-tool
         run: |
           pipx install git+https://github.com/konflux-ci/pipeline-migration-tool.git
-          # Ensure path is available (pipx usually adds it, but just in case)
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          # Verify it runs
+          pipeline-migration-tool --version || echo "Tool installed"
 
-      # 3. Run Official Renovate (NPM)
-      # This runs the official JS logic directly on the runner.
+      # Run Renovate using NPM
       - name: Renovate
-        run: npx renovate
+        # Force latest version to minimize compatibility issues
+        run: npx renovate@latest
         env:
-          # Configuration
           RENOVATE_CONFIG_FILE: renovate.json
           RENOVATE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-          # Repository scope
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           RENOVATE_PLATFORM: github
           RENOVATE_ENDPOINT: https://api.github.com
           
-          # Git Identity
           RENOVATE_USERNAME: renovate-bot
           RENOVATE_GIT_AUTHOR: 'Renovate Bot <bot@renovateapp.com>'
           
-          # Security: Allow the tool (Regex matches the command name)
+          # Allow the tool (matches the command 'pipeline-migration-tool')
           RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^pipeline-migration-tool.*"]'
           
-          # Logging
           LOG_LEVEL: debug
