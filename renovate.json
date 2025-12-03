@@ -28,6 +28,10 @@
         "branchPrefix": "konflux/tasks-test/",
         "commitMessageTopic": "Konflux task references",
         "prCreation": "immediate",
+        "automerge": true,
+        "automergeType": "pr",
+        "automergeStrategy": "squash",
+        "ignoreTests": true,
         "prBodyColumns": [
           "Package",
           "Change",
