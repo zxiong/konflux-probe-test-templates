@@ -355,12 +355,7 @@ spec:
         operator: in
         values:
         - "false"
-    - matrix:
-        params:
-        - name: image-platform
-          value:
-          - $(params.build-platforms)
-      name: clair-scan
+    - name: clair-scan
       params:
       - name: image-digest
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
@@ -433,12 +428,7 @@ spec:
         operator: in
         values:
         - "false"
-    - matrix:
-        params:
-        - name: image-arch
-          value:
-          - $(params.build-platforms)
-      name: clamav-scan
+    - name: clamav-scan
       params:
       - name: image-digest
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
@@ -451,7 +441,7 @@ spec:
         - name: name
           value: clamav-scan
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-clamav-scan:0.3@sha256:f3d2d179cddcc07d0228d9f52959a233037a3afa2619d0a8b2effbb467db80c3
+          value: quay.io/konflux-ci/tekton-catalog/task-clamav-scan:0.2@sha256:40555593de346dd3083410c9517d52c3f27e27cb66f447054f4f66fcff56e23f
         - name: kind
           value: task
         resolver: bundles
