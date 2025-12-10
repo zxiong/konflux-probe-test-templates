@@ -9,7 +9,7 @@
   "branchPrefix": "konflux/renovate/",
   "prConcurrentLimit": 5,
   "includePaths": [
-    "nodejs-devfile-sample-test/COMPONENT-pull-request.yaml"
+    "nodejs-devfile-sample-MultiArch/COMPONENT-push.yaml"
   ],
   "tekton": {
     "enabled": true,
