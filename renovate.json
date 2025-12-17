@@ -13,14 +13,15 @@
   ],
   "tekton": {
     "enabled": true,
-    "fileMatch": [
-      "\\.ya?ml$"
+    "managerFilePatterns": [
+      "/\\.ya?ml$/"
     ],
     "packageRules": [
       {
         "description": "Group all Konflux task updates together",
         "matchPackageNames": [
           "/^quay.io/konflux-ci/tekton-catalog//",
+          "/^quay.io/konflux-ci/konflux-vanguard//",
           "/^quay.io/redhat-appstudio-tekton-catalog//"
         ],
         "enabled": true,
@@ -38,14 +39,11 @@
           "Notes"
         ],
         "prBodyDefinitions": {
-          "Notes": "{{#if (or (containsString updateType 'minor') (containsString updateType 'major'))}}:warning: [Migration guide](https://github.com/konflux-ci/build-definitions/blob/main/task/{{{replace '^quay.io/(redhat-appstudio-tekton-catalog|konflux-ci/tekton-catalog)/task-' '' packageName}}}/{{{newVersion}}}/MIGRATION.md) :warning:{{/if}}"
+          "Notes": "{{#if (or (containsString updateType 'minor') (containsString updateType 'major'))}}:warning: [Migration guide](https://github.com/konflux-ci/build-definitions/blob/main/task/{{{replace '^quay.io/(redhat-appstudio-tekton-catalog|konflux-ci/tekton-catalog|konflux-ci/konflux-vanguard)/task-' '' packageName}}}/{{{newVersion}}}/MIGRATION.md) :warning:{{/if}}"
         },
         "recreateWhen": "always",
         "recreateClosed": true,
         "rebaseWhen": "behind-base-branch",
-        "force": {
-          "constraints": null
-        },
         "postUpgradeTasks": {
           "commands": [
             "pipeline-migration-tool migrate -f \"$RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE\""
