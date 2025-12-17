@@ -58,5 +58,6 @@
       }
     ]
   },
-  "dependencyDashboard": true
+  "dependencyDashboard": false,
+  "dependencyDashboardAutoclose": true
 }
