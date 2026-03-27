@@ -18,7 +18,7 @@ metadata:
   namespace: NAMESPACE
 spec:
   timeouts:
-    pipeline: "45m"
+    pipeline: "20m"
   params:
   - name: git-url
     value: '{{source_url}}'
